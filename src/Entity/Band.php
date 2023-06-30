@@ -6,6 +6,7 @@ use App\Repository\BandRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+
 #[ORM\Entity(repositoryClass: BandRepository::class)]
 class Band
 {
@@ -23,11 +24,11 @@ class Band
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $city = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $start = null;
+    #[ORM\Column(nullable: true)]
+    private ?int $start = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $split = null;
+    #[ORM\Column(nullable: true)]
+    private ?int $split = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $founders = null;
@@ -82,24 +83,24 @@ class Band
         return $this;
     }
 
-    public function getStart(): ?\DateTimeInterface
+    public function getStart(): ?int
     {
         return $this->start;
     }
 
-    public function setStart(?\DateTimeInterface $start): static
+    public function setStart(?int $start): static
     {
         $this->start = $start;
 
         return $this;
     }
 
-    public function getSplit(): ?\DateTimeInterface
+    public function getSplit(): ?int
     {
         return $this->split;
     }
 
-    public function setSplit(?\DateTimeInterface $split): static
+    public function setSplit(?int $split): static
     {
         $this->split = $split;
 
