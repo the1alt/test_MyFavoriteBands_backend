@@ -4,13 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Band;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\BandRepository;
-use Symfony\Component\HttpFoundation\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-#[Route('/api')]
+#[Route('/api/band')]
 class BandController extends AbstractController
 {
     protected $bandRepository;
@@ -20,31 +20,196 @@ class BandController extends AbstractController
         $this->bandRepository = $bandRepository;
     } 
 
-    #[Route('/band', name: 'list_bands')]
+    /**
+     * List bands
+     *
+     * @return JsonResponse
+     */
+    #[Route('', name: 'list_bands', methods:["GET"])]
     public function list(): JsonResponse
     {
 
-        $list = $this->bandRepository->findAll();
+        // find all bands
+        $list = $this->bandRepository->findAll(); 
         
-        return $this->json([
-            'data' => $list,
-            'message' => 'List of bands',
-            'path' => 'src/Controller/BandController.php',
-        ]);
+        return $this->json(
+            $list,
+            headers: ['Content-Type' => 'application/json;charset=UTF-8']
+        );
     }
 
-    #[Route('/upload-excel', name:'import_bands')]
-    /*
-    * @param Request $request
-    * @throws \Exception
-    */
+    /**
+     * Get Band from Id
+     * @param [integer] $id
+     * @return JsonResponse
+     */
+    #[Route('/{id}', name: 'read_band', methods:["GET"])]
+    public function read($id): JsonResponse
+    {
+        // find band from $id;
+        $band = $this->bandRepository->find($id); 
+
+        // If band not found return 404
+        if(!$band){
+            return $this->json('No band found for id '.$id, 404, headers: ['Content-Type' => 'application/json;charset=UTF-8']);
+        }
+
+        return $this->json(
+            $band,
+            headers: ['Content-Type' => 'application/json;charset=UTF-8']
+        );
+    }
+    
+
+
+    #[Route('', name: 'create_band', methods:["POST"])]
+    /**
+     * Create Band
+     * @param Request $request
+     * @bodyParam name string required
+     * @bodyParam origin string optional nullable
+     * @bodyParam city string optional nullable
+     * @bodyParam start integer optional nullable
+     * @bodyParam split integer optional nullable
+     * @bodyParam founders string optional nullable
+     * @bodyParam members_count integer optional nullable
+     * @bodyParam style string optional nullable
+     * @bodyParam description text optional nullable
+     * @return JsonResponse
+     */
+    public function create(Request $request): JsonResponse
+    {
+
+        // make sure that the band does not already exists in the db 
+        $bandExistant = $this->bandRepository->findOneBy(array('name' => $request->request->get('name')));  
+
+        // if a band with the same name already exists, return error 400
+        if($bandExistant){
+            return $this->json(
+                'A band with the same name already exists',
+                400,
+                headers: ['Content-Type' => 'application/json;charset=UTF-8']
+            );
+        }
+
+        // Create Band
+        $band = new Band();
+        $band->setName($request->request->get('name'));
+        $band->setOrigin($request->request->get('origin'));
+        $band->setCity($request->request->get('city'));
+        $band->setStart($request->request->get('start'));
+        $band->setSplit($request->request->get('split'));
+        $band->setFounders($request->request->get('founders'));
+        $band->setMembersCount($request->request->get('members_count'));
+        $band->setStyle($request->request->get('style'));
+        $band->setDescription($request->request->get('description'));
+        $this->bandRepository->save($band, true);
+
+        return $this->json(
+            $band,
+            headers: ['Content-Type' => 'application/json;charset=UTF-8']
+        );
+    }
+
+    /**
+     * Update Band
+     *
+     * @param [integer] $id
+     * @param Request $request
+     * @bodyParam name string required
+     * @bodyParam origin string optional nullable
+     * @bodyParam city string optional nullable
+     * @bodyParam start integer optional nullable
+     * @bodyParam split integer optional nullable
+     * @bodyParam founders string optional nullable
+     * @bodyParam members_count integer optional nullable
+     * @bodyParam style string optional nullable
+     * @bodyParam description text optional nullable
+     * @return JsonResponse
+     */
+    #[Route('/{id}', name: 'update_band', methods:["PUT"])]
+    public function update($id, Request $request): JsonResponse
+    {
+        // find band from $id;
+        $band = $this->bandRepository->find($id);
+
+        // If band not found return 404
+        if(!$band){
+            return $this->json('No band found for id '.$id, 404, headers: ['Content-Type' => 'application/json;charset=UTF-8']);
+        }
+        
+        // Update fields sent
+        if($request->request->get('name'))
+            $band->setName($request->request->get('name'));
+        if($request->request->get('origin'))
+            $band->setOrigin($request->request->get('origin'));
+        if($request->request->get('city'))
+            $band->setCity($request->request->get('city'));
+        if($request->request->get('start'))
+            $band->setStart($request->request->get('start'));
+        if($request->request->get('split'))
+            $band->setSplit($request->request->get('split'));
+        if($request->request->get('founders'))
+            $band->setFounders($request->request->get('founders'));
+        if($request->request->get('members_count'))
+            $band->setMembersCount($request->request->get('members_count'));
+        if($request->request->get('style'))
+            $band->setStyle($request->request->get('style'));
+        if($request->request->get('description'))
+            $band->setDescription($request->request->get('description'));
+
+        $this->bandRepository->save($band, true);
+        
+        return $this->json(
+            $band,
+            headers: ['Content-Type' => 'application/json;charset=UTF-8']
+        );
+    }
+
+    /**
+     * Delete Band
+     *
+     * @param [integer] $id
+     * @return JsonResponse
+     */
+    #[Route('/{id}', name: 'delete_band', methods:["DELETE"])]
+    public function delete($id): JsonResponse
+    {
+
+        // find band from $id;
+        $band = $this->bandRepository->find($id);
+
+        // If band not found return 404
+        if(!$band){
+            return $this->json('No band found for id '.$id, 404, headers: ['Content-Type' => 'application/json;charset=UTF-8']);
+        }
+
+        $this->bandRepository->remove($band, true);
+        
+        return $this->json(
+            'The band has succesfully been deleted',
+            headers: ['Content-Type' => 'application/json;charset=UTF-8']
+        );
+    }
+
+    /**
+     * Import Excel
+     * Import bands data from a xslx file
+     *
+     * @param [file] file
+     * @return JsonResponse
+     */
+    #[Route('/import', name:'import_bands', methods:["POST"])]
     public function import(Request $request): JsonResponse
     {
-        $file = $request->files->get('file'); // get the file from the sent request
+        // get the file from the sent request
+        $file = $request->files->get('file'); 
         
-        $fileFolder = __DIR__ . '/../../public/uploads/';  //choose the folder in which the uploaded file will be stored
+        // choose the folder in which the uploaded file will be stored
+        $fileFolder = __DIR__ . '/../../public/uploads/';  
         
-        $filePathName = md5(uniqid()) . $file->getClientOriginalName(); // apply md5 function to generate an unique identifier for the file and concat it with the file extension  
+        // apply md5 function to generate an unique identifier for the file and concat it with the file extension  
+        $filePathName = md5(uniqid()) . $file->getClientOriginalName(); 
         
         // Try to save the file
         try {
@@ -53,17 +218,20 @@ class BandController extends AbstractController
             dd($e);
         }
 
-        $spreadsheet = IOFactory::load($fileFolder . $filePathName); // Here we are able to read from the excel file 
+        // Here we are able to read from the excel file 
+        $spreadsheet = IOFactory::load($fileFolder . $filePathName); 
         
-        $row = $spreadsheet->getActiveSheet()->removeRow(1); // I added this to be able to remove the first file line 
+        // I added this to be able to remove the first file line 
+        $row = $spreadsheet->getActiveSheet()->removeRow(1); 
         
-        $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true); // here, the read data is turned into an array
+        // here, the read data is turned into an array
+        $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true); 
 
-        $bandsArray = []; // Initialize an array to store bands
         // Loop threw the datas to rename columns;
         foreach($sheetData as $bandEl){
 
-            $bandExistant = $this->bandRepository->findOneBy(array('name' => $bandEl['A']));  // make sure that the user does not already exists in your db 
+            // make sure that the band does not already exists in the db 
+            $bandExistant = $this->bandRepository->findOneBy(array('name' => $bandEl['A']));  
             
             // if no band with same name already exists, 
             if(!$bandExistant){
