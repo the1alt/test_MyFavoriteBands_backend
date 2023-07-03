@@ -10,11 +10,13 @@ Copy the .env.example file has .env.
 
 Replace USERNAME, PASSWORD and DATABASENAME from the DATABASE_URL with your own configuration.
 
+Run `php bin/console doctrine:migrations:migrate` to generate the tables on your database.
+
 ## User Interface
 
 This project is a CRUD API. 
 
-You can download and run the [MyFavoriteBands Frontend](https://github.com/the1alt/test_WinLassie_frontend.git) to interact with the api.
+You can download and run the [MyFavoriteBands Frontend](https://github.com/the1alt/test_MyFavoriteBands_frontend.git) to interact with the api.
 
 ## Development server
 
