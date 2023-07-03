@@ -14,7 +14,7 @@ Replace USERNAME, PASSWORD and DATABASENAME from the DATABASE_URL with your own 
 
 This project is a CRUD API. 
 
-You can download and run the [MyFavoriteBands Frontend](https://github.com/the1alt/test_WinLassie_Frontend.git) to interact with the api.
+You can download and run the [MyFavoriteBands Frontend](https://github.com/the1alt/test_WinLassie_frontend.git) to interact with the api.
 
 ## Development server
 
