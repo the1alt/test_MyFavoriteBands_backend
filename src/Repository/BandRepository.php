@@ -21,6 +21,11 @@ class BandRepository extends ServiceEntityRepository
         parent::__construct($registry, Band::class);
     }
 
+    public function findAll()
+    {
+        return $this->findBy(array(), array('name' => 'ASC'));
+    }
+
     public function save(Band $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);

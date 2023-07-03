@@ -30,7 +30,7 @@ class BandController extends AbstractController
     {
 
         // find all bands
-        $list = $this->bandRepository->findAll(); 
+        $list = $this->bandRepository->findAll(array(), array('name' => 'ASC')); 
         
         return $this->json(
             $list,
@@ -62,7 +62,6 @@ class BandController extends AbstractController
     
 
 
-    #[Route('', name: 'create_band', methods:["POST"])]
     /**
      * Create Band
      * @param Request $request
@@ -77,6 +76,7 @@ class BandController extends AbstractController
      * @bodyParam description text optional nullable
      * @return JsonResponse
      */
+    #[Route('', name: 'create_band', methods:["POST"])]
     public function create(Request $request): JsonResponse
     {
 
@@ -139,23 +139,14 @@ class BandController extends AbstractController
         }
         
         // Update fields sent
-        if($request->request->get('name'))
             $band->setName($request->request->get('name'));
-        if($request->request->get('origin'))
             $band->setOrigin($request->request->get('origin'));
-        if($request->request->get('city'))
             $band->setCity($request->request->get('city'));
-        if($request->request->get('start'))
             $band->setStart($request->request->get('start'));
-        if($request->request->get('split'))
             $band->setSplit($request->request->get('split'));
-        if($request->request->get('founders'))
             $band->setFounders($request->request->get('founders'));
-        if($request->request->get('members_count'))
             $band->setMembersCount($request->request->get('members_count'));
-        if($request->request->get('style'))
             $band->setStyle($request->request->get('style'));
-        if($request->request->get('description'))
             $band->setDescription($request->request->get('description'));
 
         $this->bandRepository->save($band, true);
