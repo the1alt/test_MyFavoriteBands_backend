@@ -139,15 +139,15 @@ class BandController extends AbstractController
         }
         
         // Update fields sent
-            $band->setName($request->request->get('name'));
-            $band->setOrigin($request->request->get('origin'));
-            $band->setCity($request->request->get('city'));
-            $band->setStart($request->request->get('start'));
-            $band->setSplit($request->request->get('split'));
-            $band->setFounders($request->request->get('founders'));
-            $band->setMembersCount($request->request->get('members_count'));
-            $band->setStyle($request->request->get('style'));
-            $band->setDescription($request->request->get('description'));
+        $band->setName($request->request->get('name'));
+        $band->setOrigin($request->request->get('origin'));
+        $band->setCity($request->request->get('city'));
+        $band->setStart($request->request->get('start'));
+        $band->setSplit($request->request->get('split'));
+        $band->setFounders($request->request->get('founders'));
+        $band->setMembersCount($request->request->get('members_count'));
+        $band->setStyle($request->request->get('style'));
+        $band->setDescription($request->request->get('description'));
 
         $this->bandRepository->save($band, true);
         
